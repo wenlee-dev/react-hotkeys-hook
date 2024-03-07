@@ -1305,3 +1305,17 @@ test('Should listen to special chars with modifiers', async () => {
 
   expect(callback).toHaveBeenCalledTimes(1)
 })
+
+test('Should run subsequent listeners for the same hotkey if a previous listener has been disabled via callback', async () => {
+  const user = userEvent.setup()
+  const callback1 = jest.fn();
+  const callback2 = jest.fn();
+
+  renderHook(() => useHotkeys('a', callback1, {enabled: () => false}))
+  renderHook(() => useHotkeys('a', callback2))
+
+  await user.keyboard('a')
+
+  expect(callback1).not.toHaveBeenCalled()
+  expect(callback2).toHaveBeenCalledTimes(1)
+})
