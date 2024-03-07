@@ -14,12 +14,6 @@ import { useBoundHotkeysProxy } from './BoundHotkeysProxyProvider'
 import useDeepEqualMemo from './useDeepEqualMemo'
 import { isReadonlyArray, pushToCurrentlyPressedKeys, removeFromCurrentlyPressedKeys } from './isHotkeyPressed'
 
-const stopPropagation = (e: KeyboardEvent): void => {
-  e.stopPropagation()
-  e.preventDefault()
-  e.stopImmediatePropagation()
-}
-
 const useSafeLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect
 
 export default function useHotkeys<T extends HTMLElement>(
@@ -73,7 +67,7 @@ export default function useHotkeys<T extends HTMLElement>(
           rootNode.activeElement !== ref.current &&
           !ref.current.contains(rootNode.activeElement)
         ) {
-          stopPropagation(e)
+          e.preventDefault()
           return
         }
       }
@@ -97,7 +91,7 @@ export default function useHotkeys<T extends HTMLElement>(
           maybePreventDefault(e, hotkey, memoisedOptions?.preventDefault)
 
           if (!isHotkeyEnabled(e, hotkey, memoisedOptions?.enabled)) {
-            stopPropagation(e)
+            e.preventDefault()
 
             return
           }
